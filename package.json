@@ -1,0 +1,11 @@
+{
+  "name": "playwright-runner",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui-host=0.0.0.0 --ui-port=8080"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.49.0"
+  }
+}
