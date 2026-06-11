@@ -27,10 +27,22 @@ test.describe('smoke', () => {
     await expect(page.locator('body')).toBeVisible();
   });
 
+  // Dev-server tooling noise that doesn't indicate a broken page. HMR
+  // WebSockets (Next.js/webpack/Vite) fail to connect through
+  // host.docker.internal when the target runs in dev mode on the host.
+  const IGNORED_CONSOLE_ERRORS = [
+    /webpack-hmr/,
+    /WebSocket connection to .*\/_next\//,
+    /\[vite\] failed to connect/,
+  ];
+
   test('no console errors on initial load', async ({ page }) => {
     const errors: string[] = [];
     page.on('console', (message) => {
-      if (message.type() === 'error') {
+      if (
+        message.type() === 'error' &&
+        !IGNORED_CONSOLE_ERRORS.some((pattern) => pattern.test(message.text()))
+      ) {
         errors.push(message.text());
       }
     });
