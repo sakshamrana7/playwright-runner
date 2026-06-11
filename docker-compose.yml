@@ -1,0 +1,19 @@
+services:
+  playwright:
+    build: .
+    container_name: playwright-runner
+    ports:
+      - "8080:8080"
+    environment:
+      - TARGET_URL=${TARGET_URL:-http://host.docker.internal:3000}
+    # On Docker Desktop (Mac/Windows) host.docker.internal resolves out of
+    # the box; on Linux it doesn't exist unless mapped to the host gateway
+    # like this. With the entry present, the same hostname works everywhere.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # Live-mount tests so edits on the host show up in the container
+    # immediately — no image rebuild needed. The report mount writes the
+    # HTML report back to the host so it survives the container.
+    volumes:
+      - ./tests:/runner/tests
+      - ./playwright-report:/runner/playwright-report
